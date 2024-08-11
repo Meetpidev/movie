@@ -24,14 +24,11 @@ function Header({isAdmin}) {
           <Box display={'flex'} marginLeft={'auto'}>
             <Tabs textColor='inherit' indicatorColor='secondary' value={value} onChange={(e,val)=>setVlaue(val)}>
              <Tab label="Home" component={Link} to="/" sx={{color:"white"}}></Tab>
-             {isAdmin ? (
-               <Tab label="Add Theater" component={Link} to="/theater" sx={{ color: "white" }}></Tab>
-              ) : (
-               <Tab label="Theater" component={Link} to="/theater" sx={{ color: "white" }}></Tab>
-              )}
+              <Tab label="Theater" component={Link} to="/theater" sx={{ color: "white" }}></Tab>
               <Tab label="Movies" component={Link} to="/movie" sx={{color:"white"}}></Tab>
-              <Tab label="Admin" component={Link} to="/admin" sx={{color:"white"}}> </Tab>
-              <Tab label="User" component={Link} to="/user" sx={{color:"white"}}></Tab>
+              {/* <Tab label="Admin" component={Link} to="/admin" sx={{color:"white"}}> </Tab>
+              <Tab label="User" component={Link} to="/user" sx={{color:"white"}}></Tab> */}
+              <Tab label='Sign Up' component={Link} to='/register' sx={{color:"white"}}></Tab>
             </Tabs>
           </Box>
         </Toolbar>

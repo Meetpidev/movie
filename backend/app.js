@@ -12,7 +12,7 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(cors);
+app.use(cors());
 
 app.use('/api/movies', movieRoutes);
 app.use('/api/theatres', theatreRoutes);

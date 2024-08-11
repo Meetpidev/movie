@@ -1,4 +1,3 @@
-
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
 import FormLabel from '@mui/material/FormLabel';
@@ -9,12 +8,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import image from "../../assets/image.png";
-import '../../styleing/form.css';
 
-export default function AuthForm({onSubmit}) {
+export default function AuthForm() {
   const labelStyle = { mt: 1, mb: 1 };
   const [isSignup, setIsSignup] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [userType, setUserType] = useState("");
+  const [secretKey, setSecretKey] = useState("");
   const [input, setInput] = useState({
     name: "",
     email: "",
@@ -22,36 +22,88 @@ export default function AuthForm({onSubmit}) {
     phone: "",
   });
 
-  let handleInputValue = (e) => {
+  const handleInputValue = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  let handleSubmit = (e) => {
-  e.preventDefault();
-  onSubmit(input); 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (userType === "") {
+      alert("Something went wrong");
+    } else if (isSignup && userType === 'Admin') {
+      alert(`Your Secret Key is: ${input.name}`);
+      setUsers([...users, { ...input, userType, secretKey: input.name }]); 
+    } else if (isSignup && userType === 'User') {
+      console.log("User");
+      setUsers([...users, { ...input, userType }]); 
+    } else {
+      console.log("Form submitted");
+    }
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    const user = users.find(user => user.email === input.email && user.password === input.password);
+    if (user) {
+      if (userType === 'Admin' && user.secretKey === secretKey) {
+        console.log("Admin");
+      } else if (userType === 'User') {
+        console.log("User");
+      } else {
+        alert("Invalid secretKey");
+      }
+    } else {
+      alert("Invalid credentials");
+    }
   };
 
   return (
     <>
-      <Dialog open='true' PaperProps={{ style: { borderRadius: 20, overflow: 'hidden' } }}>
+      <Dialog open={true} PaperProps={{ style: { borderRadius: 20, overflow: 'hidden' } }}>
         <Box sx={{ ml: 'auto', padding: 1 }}>
           <IconButton component={Link} to="/">
-            <CloseIcon></CloseIcon>
+            <CloseIcon />
           </IconButton>
         </Box>
         <Box>
-          <Typography padding={3} variant='h5' textAlign={'left'}>
-            {isSignup ? "Sign Up" : "Login"}
-          </Typography>
+          <Box display={'flex'}>
+            <Typography padding={3} variant='h5' textAlign={'left'}>
+              {isSignup ? "Sign Up as" : "Login as"}
+            </Typography>
+
+            <Typography variant='h6' sx={{ paddingRight: '1.4rem', marginBottom: '1rem' }}>
+              <input
+                type="radio"
+                name="UserType"
+                value="User"
+                checked={userType === 'User'}
+                onChange={(e) => setUserType(e.target.value)}
+                style={{ marginTop: '2rem' }}
+              /> User
+            </Typography>
+
+            <Typography variant='h6'>
+              <input
+                type="radio"
+                name="UserType"
+                value="Admin"
+                checked={userType === 'Admin'}
+                onChange={(e) => setUserType(e.target.value)}
+                style={{ marginTop: '2rem' }}
+              /> Admin
+            </Typography>
+          </Box>
           <Typography paddingLeft={3} variant='h6' display={"flex"} textAlign={'left'}>
-            {isSignup ? "" : "Dont have an account"}
+            {isSignup ? "" : "Don't have an account"}
             <Typography variant='h6' paddingLeft={2}>
-              <Button sx={{ borderRadius: 10 }} fullWidth variant='standard' onClick={() => setIsSignup(!isSignup)}>{isSignup ? "Login" : "Sign Up"}</Button>
+              <Button sx={{ borderRadius: 10 }} fullWidth variant='standard' onClick={() => setIsSignup(!isSignup)}>
+                {isSignup ? "Login" : "Sign Up"}
+              </Button>
             </Typography>
           </Typography>
         </Box>
-        
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={isSignup ? handleSubmit : handleLoginSubmit}>
           <Box padding={6} display={"flex"} justifyContent={"center"} flexDirection="column" width={400} margin="auto" alignContent={"center"}>
             {isSignup && (
               <>
@@ -100,57 +152,34 @@ export default function AuthForm({onSubmit}) {
                 />
               </>
             )}
-            <Button type='submit' sx={{ mt: 5, borderRadius: 10 }} fullWidth variant='contained' bgcolor='#1b1b1b'>{isSignup ? "Sign Up" : "Login"}</Button>
+
+            {!isSignup && userType === 'Admin' && (
+              <>
+                <FormLabel>Secret Key</FormLabel>
+                <TextField
+                  type={'password'}
+                  value={secretKey}
+                  onChange={(e) => setSecretKey(e.target.value)}
+                  name='secretKey'
+                  variant='standard'
+                  margin='normal'
+                  sx={{ mb: 4 }}
+                />
+              </>
+            )}
+
+            <Button 
+              type='submit' 
+              sx={{ mt: 5, borderRadius: 10 }} 
+              fullWidth 
+              variant='contained' 
+              bgcolor='#1b1b1b'
+            >
+              {isSignup ? "Sign Up" : "Login"}
+            </Button>
           </Box>
         </form>
       </Dialog>
     </>
   );
 }
-
-       {/* <div className='form'>
-         <div className ="form1">
-           <div className="form-content">
-            <p className="login">Login</p>
-
-          <div className="form-start">
-           <div className="notacc">Dont have account </div>
-
-           <div className="signUp">
-            <a href="#" className="signUp_form">Sign Up</a>
-           </div>
-          </div>
-
-        <form action="">
-
-        <div className="inputs">
-            <div className="input-group">
-              <label htmlFor="email">Email</label>
-              <input type="email" className="input-field" id="email" name="email" required />
-            </div>
-
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input type="password" className="input-field" id="password" name="password" required />
-          </div>
-        </div>
-        
-        <button>
-          <span className="shadow"></span>
-          <span className="edge"></span>
-          <span className="front text"> Login</span>
-        </button>
-
-        </form>
-        </div>
-
-        <div className="image">
-          <img src={image} alt="" className='image'/>
-        </div>
-
-         </div>
-
-       
-       </div> */}
-    
- 

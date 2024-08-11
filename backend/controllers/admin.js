@@ -27,7 +27,7 @@ exports.addMin = async(req,res) => {
     const hashedpassword = bcrypt.hashSync(password,saltRounds);
 
     try {
-        admin = new Admin({ name, email, password: hashedpassword, phone });
+        admin = new Admin({ name, email, password: hashedpassword, phone, role });
         admin = admin.save();
     } catch(error){
         return res.status(500).json({ message: "Invalid input"});
