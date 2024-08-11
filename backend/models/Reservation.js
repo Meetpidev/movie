@@ -5,6 +5,7 @@ const reservationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   startAt: { type: String, required: true },
   seats: { type: Array, required: true },
+  isBooked: { type: Boolean, default: false },
   orderID: { type: String, required: true, unique: true },
   ticketPrice: { type: mongoose.Schema.Types.ObjectId, ref: 'Theatre', required: true },
   movie: { type: mongoose.Schema.Types.ObjectId, ref: 'Movie', required: true },
@@ -13,9 +14,6 @@ const reservationSchema = new mongoose.Schema({
   phone: { type: String, required: true },
 });
 
-reservationSchema.add({
-  isBooked: { type: Boolean, default: false }
-});
 
 reservationSchema.pre('save', function(next) {
   if (!this.orderID) {
