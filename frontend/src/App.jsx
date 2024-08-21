@@ -41,8 +41,8 @@ import Footer from "./common/Footer.jsx";
 
 import Header from "./common/Header";
 // import Footer from "./common/Footer";
-import Movie from "./components/Movie";
-import Theater from "./components/Theater";
+import Movie from "../src/components/Movies/Movie.jsx";
+import Theater from "../src/components/Theater/Theater";
 import AuthForm from "./components/Auth/AuthForm";
 
 

@@ -13,6 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { useEffect } from 'react';
 
 function Header() {
   const [value, setValue] = useState(0);
@@ -26,9 +27,15 @@ function Header() {
   });
   const userEmail = localStorage.getItem("userEmail") || "";
   const userInitial = userEmail ? userEmail.charAt(0).toUpperCase() : "";
-  const userType = localStorage.getItem("userType") || "";
-  console.log("User Type:", userType); 
+  const userType = localStorage.getItem("userType") || ""; 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.style.inert = openDialog ? 'true' : 'false';
+    return () => {
+      document.body.style.inert = 'false';
+    };
+  }, [openDialog]);
 
   const handleLogout = () => {
     localStorage.removeItem("userEmail");
@@ -62,9 +69,43 @@ function Header() {
   };
 
   const handleSave = async () => {
-    console.log(theater);
-    handleCloseDialog();
+    if (!theater.name || !theater.city || !theater.ticketPrice || !theater.seats || !theater.image) {
+      alert("Please fill all the fields and provide an image URL.");
+      return;
+    }
+  
+    const theaterData = {
+      name: theater.name,
+      city: theater.city,
+      ticketPrice: parseFloat(theater.ticketPrice),
+      seats: theater.seats.split(',').map(Number),  // Assuming seats are entered as a comma-separated string
+      image: theater.image,  // URL as a string
+    };
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/theatres/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(theaterData),
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to add theater: ${errorText}`);
+      }
+  
+      const result = await response.json();
+      console.log('Theater added:', result);
+      handleCloseDialog();
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message); // Display the error to the user
+    }
   };
+  
+
 
   return (
     <>
@@ -170,12 +211,16 @@ function Header() {
             variant="standard"
             onChange={handleChange}
           />
-          <input
-            accept="image/*"
-            type="file"
-            onChange={handleImageChange}
-            style={{ marginTop: '1rem' }}
+          <TextField
+           margin="dense"
+           name="image"
+           label="Image URL"
+           type="text"
+           fullWidth
+           variant="standard"
+           onChange={handleChange}
           />
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
