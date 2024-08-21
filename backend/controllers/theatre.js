@@ -10,7 +10,7 @@ exports.addTheatre = async (req, res) => {
   // } catch (error) {
   //   res.status(400).json({ message: error.message });
   // }
-  
+
   const exToken = req.headers.authorization?.split(" ")[1];
 
   if (!exToken || exToken.trim() === "") {
@@ -55,7 +55,7 @@ exports.addTheatre = async (req, res) => {
       ticketPrice,
       seats,
       image,
-      admin: adminId, // Associate the theater with the admin
+      admin: adminId, 
     });
 
     const savedTheatre = await newTheatre.save();

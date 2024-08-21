@@ -139,7 +139,7 @@ console.log(theaters); // This should print the theater details if it exists.
         endDate,
         trailer,
         admin: adminId,
-        theater: theater._id,  // Automatically associate with the admin's theater
+        theater: theater._id,  
       });
   
       movie = await movie.save();  
