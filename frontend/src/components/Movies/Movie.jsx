@@ -1,4 +1,4 @@
-import { getAllMovies } from "../../api/getAllmovie";
+import { getAllMovies } from "../../api/Movie_api/getAllmovie.js";
 import { useEffect } from "react";
 
 function Movie() {

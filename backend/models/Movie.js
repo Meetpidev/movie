@@ -12,6 +12,7 @@ const movieSchema = new mongoose.Schema({
   duration: { type: Number, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
+  theater: { type: mongoose.Types.ObjectId, ref: "Theatre", required: true },
 });
 
 const Movie = mongoose.model('Movie', movieSchema);

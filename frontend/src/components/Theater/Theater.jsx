@@ -10,9 +10,12 @@ import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 
 function Theater() {
+
   const [theatres, setTheatres] = useState([]);
   const [editTheatre, setEditTheatre] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  const userType = localStorage.getItem("userType") || ""; 
 
   useEffect(() => {
     const fetchTheatres = async () => {
@@ -78,14 +81,18 @@ function Theater() {
                 <Typography variant="body2">City: {theatre.city}</Typography>
                 <Typography variant="body2">Ticket Price: {theatre.ticketPrice}</Typography>
                 <Typography variant="body2">Seats: {theatre.seats}</Typography>
-                <Button variant="contained" color="primary" onClick={() => { setIsEditing(true); setEditTheatre(theatre); }}>Edit</Button>
-                <Button variant="contained" color="error" onClick={() => handleDeleteTheatre(theatre._id)} sx={{ ml: 1 }}>Delete</Button>
+                {userType === 'Admin' && (
+                  <>
+                    <Button variant="contained" color="primary" onClick={() => { setIsEditing(true); setEditTheatre(theatre); }}>Edit</Button>
+                    <Button variant="contained" color="error" onClick={() => handleDeleteTheatre(theatre._id)} sx={{ ml: 1 }}>Delete</Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
-      {isEditing && (
+      {isEditing && userType === 'Admin' && (
         <Box component="form" onSubmit={handleUpdateTheatre} sx={{ mt: 4 }}>
           <TextField
             margin="dense"

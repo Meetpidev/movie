@@ -6,6 +6,7 @@ const theatreSchema = new mongoose.Schema({
   ticketPrice: { type: Number, required: true },
   seats: { type: Array, required: true },
   image: { type: String, required: true },
+  admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true } 
 });
 
 const Theatre = mongoose.model('Theatre', theatreSchema);
