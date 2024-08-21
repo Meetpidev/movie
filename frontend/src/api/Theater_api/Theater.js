@@ -1,18 +1,6 @@
 import axios from "axios";
 
-export const getAllMovies = async () => {
-    const res = await axios.get("http://localhost:5000/api/movies/")
-    .catch((err) => console.log(err));
-  
-    if (res.status !== 200) {
-      return console.log("No Data");
-    }
-  
-    const data = await res.data;
-    return data;
-  };
-
-  const API_URL = 'http://localhost:5000/api/theatres';
+const API_URL = 'http://localhost:5000/api/theatres';
 
   export const getAllTheatres = async () => {
     const res = await axios.get(API_URL);

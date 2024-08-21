@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllTheatres, updateTheatre, deleteTheatre } from '../../api/getAllmovie';
+import { getAllTheatres, updateTheatre, deleteTheatre } from '../../api/Theater_api/Theater.js';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';

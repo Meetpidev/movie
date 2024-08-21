@@ -78,8 +78,8 @@ function Header() {
       name: theater.name,
       city: theater.city,
       ticketPrice: parseFloat(theater.ticketPrice),
-      seats: theater.seats.split(',').map(Number),  // Assuming seats are entered as a comma-separated string
-      image: theater.image,  // URL as a string
+      seats: theater.seats.split(',').map(Number),  
+      image: theater.image,  
     };
   
     try {
@@ -101,7 +101,7 @@ function Header() {
       handleCloseDialog();
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message); // Display the error to the user
+      alert(error.message); 
     }
   };
   
