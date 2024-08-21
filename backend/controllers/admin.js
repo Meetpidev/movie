@@ -7,7 +7,7 @@ dotenv.config();
 
 exports.addMin = async(req,res) => {
 
-    const {  name, email, password, phone } = req.body;
+    const { name, email, password, phone, role } = req.body;
 
     let existAdmin;
 

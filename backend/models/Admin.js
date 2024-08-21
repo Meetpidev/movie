@@ -41,17 +41,22 @@ const adminSchema = new Schema({
 });
 
 adminSchema.pre('save', async function (next) {
+  
   if (!this.isModified('password')) {
     return next();
   }
   
+  // Validate phone number length
+  if (this.phone.length !== 10) {
+    return next(new Error('Invalid Phone Number.'));
+  }
+
+  // Validate password length
   if (this.password.length < 6) {
     return next(new Error('Password must be at least 6 characters long.'));
   }
 
-  if (this.phone.length > 10 || this.phone.length < 10) {
-    return next(new Error('Invalid Phone Number.'));
-  }
+  next();
 });
 
 const Admin = mongoose.model('Admin', adminSchema);

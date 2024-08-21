@@ -5,15 +5,17 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 
 export default function AuthForm() {
   const labelStyle = { mt: 1, mb: 1 };
   const [isSignup, setIsSignup] = useState(false);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [userType, setUserType] = useState("");
+  
   const [secretKey, setSecretKey] = useState("");
   const [input, setInput] = useState({
     name: "",
@@ -21,45 +23,67 @@ export default function AuthForm() {
     password: "",
     phone: "",
   });
-
+  const navigate=useNavigate()
   const handleInputValue = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (userType === "") {
-      alert("Something went wrong");
-    } else if (isSignup && userType === 'Admin') {
-      alert(`Your Secret Key is: ${input.name}`);
-      setUsers([...users, { ...input, userType, secretKey: input.name }]); 
-    } else if (isSignup && userType === 'User') {
-      console.log("User");
-      setUsers([...users, { ...input, userType }]); 
-    } else {
-      console.log("Form submitted");
+      alert("Please select a user type.");
+      return;
     }
-  };
-
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    const user = users.find(user => user.email === input.email && user.password === input.password);
-    if (user) {
-      if (userType === 'Admin' && user.secretKey === secretKey) {
-        console.log("Admin");
-      } else if (userType === 'User') {
-        console.log("User");
+    
+    const endpoint = userType === 'Admin' ? "http://localhost:5000/api/admin/signup" : "http://localhost:5000/api/users/register";
+    
+    try {
+      const res = await axios.post(endpoint, { ...input, userType, secretKey: userType === 'Admin' ? input.name : undefined });
+      console.log(res.data);
+  
+      if (userType === 'Admin') {
+        alert(`Signup successful! Your Secret Key is: ${input.name}. Please keep it safe.`);
       } else {
-        alert("Invalid secretKey");
+        alert("Signup successful! You can now log in.");
       }
-    } else {
-      alert("Invalid credentials");
+      
+      setInput({ name: "", email: "", password: "", phone: "" });
+      setIsSignup(false);
+    } catch (err) {
+      console.log(err.message);
+      alert("An error occurred during signup.");
     }
   };
+  
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+
+  const endpoint = userType === 'Admin' ? "http://localhost:5000/api/admin/login" : "http://localhost:5000/api/users/login";
+
+  try {
+    const res = await axios.post(endpoint, { ...input, secretKey: userType === 'Admin' ? secretKey : undefined });
+    console.log(res.data);
+    
+    localStorage.setItem(userType === 'Admin' ? `${input.name}_token` : "token", res.data.token);
+    localStorage.setItem("userEmail", input.email); 
+    localStorage.setItem("userType", userType);
+    
+    navigate("/");
+    window.location.reload();
+  } catch (err) {
+    console.log(err.message);
+    alert("Invalid credentials or secret key.");
+  } finally {
+    setInput({ name: "", email: "", password: "", phone: "" });
+  }
+  };
+  
 
   return (
     <>
-      <Dialog open={true} PaperProps={{ style: { borderRadius: 20, overflow: 'hidden' } }}>
+   
+      <Dialog open={true} PaperProps={{ style: { borderRadius: 20, overflow: 'hidden', width: 500 } }}>
         <Box sx={{ ml: 'auto', padding: 1 }}>
           <IconButton component={Link} to="/">
             <CloseIcon />
@@ -170,7 +194,7 @@ export default function AuthForm() {
 
             <Button 
               type='submit' 
-              sx={{ mt: 5, borderRadius: 10 }} 
+              sx={{ mt: 2, borderRadius: 10 }} 
               fullWidth 
               variant='contained' 
               bgcolor='#1b1b1b'
