@@ -13,28 +13,28 @@ exports.addTheatre = async (req, res) => {
 
   const exToken = req.headers.authorization?.split(" ")[1];
 
-  if (!exToken || exToken.trim() === "") {
-    return res.status(400).json({ message: "Token Not Found" });
-  }
+if (!exToken || exToken.trim() === "") {
+  return res.status(400).json({ message: "Token Not Found" });
+}
 
-  let adminId;
+let adminId;
 
-  try {
-    const decrypted = await new Promise((resolve, reject) => {
-      jwt.verify(exToken, process.env.SECRET_KEY, (err, decoded) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(decoded);
-        }
-      });
+try {
+  const decrypted = await new Promise((resolve, reject) => {
+    jwt.verify(exToken, process.env.SECRET_KEY, (err, decoded) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(decoded);
+      }
     });
+  });
 
-    adminId = decrypted.id;
+  adminId = decrypted.id;
 
-  } catch (err) {
-    return res.status(400).json({ message: `${err}` });
-  }
+} catch (err) {
+  return res.status(400).json({ message: `${err}` });
+}
 
   // Check if the admin already has a theater
   const existingTheatre = await Theatre.findOne({ admin: adminId });
@@ -67,6 +67,38 @@ exports.addTheatre = async (req, res) => {
 
 // Update an existing theatre
 exports.updateTheatre = async (req, res) => {
+
+  const exToken = req.headers.authorization?.split(" ")[1];
+  if (!exToken || exToken.trim() === "") {
+    return res.status(400).json({ message: "Token Not Found" });
+  }
+
+  let adminId;
+  try {
+    const decrypted = await new Promise((resolve, reject) => {
+      jwt.verify(exToken, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
+        }
+      });
+    });
+    adminId = decrypted.id;
+  } catch (err) {
+    return res.status(400).json({ message: `${err}` });
+  }
+
+  const { id } = req.params;
+  const theatre = await Theatre.findById(id);
+  if (!theatre) {
+    return res.status(404).json({ message: "Theatre not found" });
+  }
+
+  if (theatre.admin.toString() !== adminId) {
+    return res.status(403).json({ message: "You are not authorized to update this theater" });
+  }
+
   try {
     const updatedTheatre = await Theatre.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json(updatedTheatre);
@@ -77,6 +109,38 @@ exports.updateTheatre = async (req, res) => {
 
 // Delete a theatre
 exports.deleteTheatre = async (req, res) => {
+
+  const exToken = req.headers.authorization?.split(" ")[1];
+  if (!exToken || exToken.trim() === "") {
+    return res.status(400).json({ message: "Token Not Found" });
+  }
+
+  let adminId;
+  try {
+    const decrypted = await new Promise((resolve, reject) => {
+      jwt.verify(exToken, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
+        }
+      });
+    });
+    adminId = decrypted.id;
+  } catch (err) {
+    return res.status(400).json({ message: `${err}` });
+  }
+
+  const { id } = req.params;
+  const theatre = await Theatre.findById(id);
+  if (!theatre) {
+    return res.status(404).json({ message: "Theatre not found" });
+  }
+
+  if (theatre.admin.toString() !== adminId) {
+    return res.status(403).json({ message: "You are not authorized to delete this theater" });
+  }
+  
   try {
     await Theatre.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Theatre deleted successfully' });

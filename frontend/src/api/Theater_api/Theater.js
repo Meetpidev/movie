@@ -2,6 +2,8 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:5000/api/theatres';
 
+const token = localStorage.getItem('token'); 
+
   export const getAllTheatres = async () => {
     const res = await axios.get(API_URL);
     return res.data;
@@ -14,16 +16,34 @@ const API_URL = 'http://localhost:5000/api/theatres';
     const res = await axios.post(API_URL, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}` 
       },
     });
     return res.data;
   };
   
   export const updateTheatre = async (id, theatreData) => {
-    const res = await axios.put(`${API_URL}/${id}`, theatreData);
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+    const res = await axios.put(`${API_URL}/${id}`, theatreData, config);
     return res.data;
   };
   
   export const deleteTheatre = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
+    try {
+      const response = await axios.delete(`${API_URL}/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting theatre:', error.response.data);
+      throw error;
+    }
+  
   };

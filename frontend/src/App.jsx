@@ -46,10 +46,14 @@ import Theater from "../src/components/Theater/Theater";
 import AuthForm from "./components/Auth/AuthForm";
 
 
+
+
+
 function App() {
 
   return (
     <>
+   
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -59,6 +63,7 @@ function App() {
         <Route path="/register" element={<AuthForm></AuthForm>}></Route>
       </Routes>
       <Footer />
+    
     </>
   );
 }

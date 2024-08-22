@@ -9,13 +9,15 @@ import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 
+
 function Theater() {
 
   const [theatres, setTheatres] = useState([]);
   const [editTheatre, setEditTheatre] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
+  
   const userType = localStorage.getItem("userType") || ""; 
+  // const admin = localStorage.getItem("admin");
 
   useEffect(() => {
     const fetchTheatres = async () => {
@@ -40,23 +42,35 @@ function Theater() {
   const handleUpdateTheatre = async (e) => {
     e.preventDefault();
     try {
+      console.log('Updating theater:', editTheatre);
+
       const updatedTheatre = await updateTheatre(editTheatre._id, editTheatre);
       setTheatres(theatres.map(theatre => theatre._id === editTheatre._id ? updatedTheatre : theatre));
       setIsEditing(false);
       setEditTheatre(null);
     } catch (error) {
-      console.error('Error updating theatre:', error);
+      console.error('Error updating theatre:', error.response.data);
+      alert('Error updating theater: ' + error.response.data.message);
     }
   };
 
   const handleDeleteTheatre = async (id) => {
     try {
-      await deleteTheatre(id);
+      console.log('Deleting theater with ID:', id);
+      const response = await deleteTheatre(id);
+      console.log('Response:', response);
+      
       setTheatres(theatres.filter(theatre => theatre._id !== id));
+      
+      alert('Theater deleted successfully!');
     } catch (error) {
-      console.error('Error deleting theatre:', error);
+      // console.error('Error deleting theatre:', error.message);
+      
+      alert('You are not authorized to delete this theater');
     }
+  
   };
+  
 
   const handleCancelEdit = () => {
     setIsEditing(false);
@@ -73,15 +87,16 @@ function Theater() {
               <CardMedia
                 component="img"
                 height="140"
-                image={`http://localhost:5000/${theatre.image}`}
+                image={theatre.image}
                 alt={theatre.name}
               />
+              
               <CardContent>
                 <Typography variant="h6">{theatre.name}</Typography>
                 <Typography variant="body2">City: {theatre.city}</Typography>
                 <Typography variant="body2">Ticket Price: {theatre.ticketPrice}</Typography>
                 <Typography variant="body2">Seats: {theatre.seats}</Typography>
-                {userType === 'Admin' && (
+                {userType === 'Admin' &&(
                   <>
                     <Button variant="contained" color="primary" onClick={() => { setIsEditing(true); setEditTheatre(theatre); }}>Edit</Button>
                     <Button variant="contained" color="error" onClick={() => handleDeleteTheatre(theatre._id)} sx={{ ml: 1 }}>Delete</Button>
@@ -142,9 +157,12 @@ function Theater() {
             <Button type="submit" variant="contained" color="primary">Save</Button>
             <Button variant="contained" color="secondary" onClick={handleCancelEdit}>Cancel</Button>
           </Box>
+          
         </Box>
       )}
+
     </Box>
+    
   );
 }
 

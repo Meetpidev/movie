@@ -65,9 +65,17 @@ export default function AuthForm() {
     const res = await axios.post(endpoint, { ...input, secretKey: userType === 'Admin' ? secretKey : undefined });
     console.log(res.data);
     
-    localStorage.setItem(userType === 'Admin' ? `${input.name}_token` : "token", res.data.token);
-    localStorage.setItem("userEmail", input.email); 
-    localStorage.setItem("userType", userType);
+    // localStorage.setItem(userType === 'Admin' ? `${input.name}_token` : "token", res.data.token);
+    // localStorage.setItem("userEmail", input.email); 
+    // localStorage.setItem("userType", userType);
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userEmail", input.email); 
+      localStorage.setItem("userType", userType);
+      localStorage.setItem("admin", res.data.admin);
+
+      
+      console.log(res.data.admin)
     
     navigate("/");
     window.location.reload();

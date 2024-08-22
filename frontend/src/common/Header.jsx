@@ -30,12 +30,14 @@ function Header() {
   const userType = localStorage.getItem("userType") || ""; 
   const navigate = useNavigate();
 
+
   useEffect(() => {
     document.body.style.inert = openDialog ? 'true' : 'false';
     return () => {
       document.body.style.inert = 'false';
     };
   }, [openDialog]);
+
 
   const handleLogout = () => {
     localStorage.removeItem("userEmail");
@@ -61,12 +63,6 @@ function Header() {
     });
   };
 
-  const handleImageChange = (e) => {
-    setTheater({
-      ...theater,
-      image: e.target.files[0],
-    });
-  };
 
   const handleSave = async () => {
     if (!theater.name || !theater.city || !theater.ticketPrice || !theater.seats || !theater.image) {
@@ -74,12 +70,21 @@ function Header() {
       return;
     }
   
+    const token = localStorage.getItem('token'); 
+  
+    if (!token) {
+      alert("You are not authenticated. Please log in.");
+      return;
+    }
+
+    console.log("Token retrieved from localStorage:", token);
+  
     const theaterData = {
       name: theater.name,
       city: theater.city,
       ticketPrice: parseFloat(theater.ticketPrice),
-      seats: theater.seats.split(',').map(Number),  
-      image: theater.image,  
+      seats: theater.seats.split(',').map(Number),
+      image: theater.image,
     };
   
     try {
@@ -87,23 +92,33 @@ function Header() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
         },
         body: JSON.stringify(theaterData),
       });
   
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to add theater: ${errorText}`);
+        throw new Error(`Admin can create only one theater`);
       }
   
       const result = await response.json();
       console.log('Theater added:', result);
+      
+      // Reset the form
+      setTheater({
+        name: '',
+        city: '',
+        ticketPrice: '',
+        seats: '',
+        image: '',
+      });
       handleCloseDialog();
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message); 
+      alert(error.message);
     }
   };
+  
   
 
   return (
