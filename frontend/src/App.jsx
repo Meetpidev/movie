@@ -44,8 +44,8 @@ import Header from "./common/Header";
 import Movie from "../src/components/Movies/Movie.jsx";
 import Theater from "../src/components/Theater/Theater";
 import AuthForm from "./components/Auth/AuthForm";
-
-
+import TheaterMovies from "./components/Theater/TeaterMovies.jsx";
+import MovieDetails from "./components/Theater/MovieDetails.jsx";
 
 
 
@@ -59,6 +59,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/singlepage/:id" element={<SinglePage />} />
         <Route path="/theater" element={<Theater></Theater>}></Route>
+        <Route path="/theater/:theatreId/movies" element={<TheaterMovies/>}/>
+        <Route path="/movie/:movieId" element={<MovieDetails />} />
         <Route path="/movie" element={<Movie></Movie>}></Route>
         <Route path="/register" element={<AuthForm></AuthForm>}></Route>
       </Routes>

@@ -47,3 +47,34 @@ const token = localStorage.getItem('token');
     }
   
   };
+
+  export const getMoviesByTheatre = async (theatreId) => {
+    const res = await axios.get(`${API_URL}/${theatreId}/movies`); 
+    return res.data;
+  };
+
+  export const updateMovie = async (id, movieData) => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+    const res = await axios.put(`http://localhost:5000/api/movies/${id}`, movieData, config);
+    return res.data;
+  };
+
+  export const deleteMovie = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/movies/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting theatre:', error.response.data);
+      throw error;
+    }
+  
+  };

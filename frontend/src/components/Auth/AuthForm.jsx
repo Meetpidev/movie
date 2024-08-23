@@ -73,7 +73,6 @@ export default function AuthForm() {
       localStorage.setItem("userEmail", input.email); 
       localStorage.setItem("userType", userType);
       localStorage.setItem("admin", res.data.admin);
-
       
       console.log(res.data.admin)
     

@@ -104,7 +104,6 @@ console.log(theaters); // This should print the theater details if it exists.
       return res.status(400).json({ message: `${err}` });
     }
   
-    // Find the theater associated with this admin
     const theater = await Theater.findOne({ admin: adminId });
     if (!theater) {
       return res.status(404).json({ message: "Theater not found for this admin" });
@@ -154,7 +153,27 @@ console.log(theaters); // This should print the theater details if it exists.
 
 // Update an existing movie
 exports.updateMovie = async (req, res) => {
+  // try {
+  //   const updatedMovie = await Movie.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  //   res.status(200).json(updatedMovie);
+  // } catch (error) {
+  //   res.status(400).json({ message: error.message });
+  // }
   try {
+    const movie = await Movie.findById(req.params.id).populate('theater');
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+
+    const exToken = req.headers.authorization?.split(" ")[1];
+    const decrypted = jwt.verify(exToken, process.env.SECRET_KEY);
+    const adminId = decrypted.id;
+
+    // Check if the admin is the owner of the theater
+    if (movie.theater.admin.toString() !== adminId) {
+      return res.status(403).json({ message: 'You are not authorized to update this movie' });
+    }
+
     const updatedMovie = await Movie.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json(updatedMovie);
   } catch (error) {
@@ -164,7 +183,27 @@ exports.updateMovie = async (req, res) => {
 
 // Delete a movie
 exports.deleteMovie = async (req, res) => {
+  // try {
+  //   await Movie.findByIdAndDelete(req.params.id);
+  //   res.status(200).json({ message: 'Movie deleted successfully' });
+  // } catch (error) {
+  //   res.status(400).json({ message: error.message });
+  // }
   try {
+    const movie = await Movie.findById(req.params.id).populate('theater');
+    if (!movie) {
+      return res.status(404).json({ message: 'Movie not found' });
+    }
+
+    const exToken = req.headers.authorization?.split(" ")[1];
+    const decrypted = jwt.verify(exToken, process.env.SECRET_KEY);
+    const adminId = decrypted.id;
+
+    // Check if the admin is the owner of the theater
+    if (movie.theater.admin.toString() !== adminId) {
+      return res.status(403).json({ message: 'You are not authorized to delete this movie' });
+    }
+
     await Movie.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Movie deleted successfully' });
   } catch (error) {
